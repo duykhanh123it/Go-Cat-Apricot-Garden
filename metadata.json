@@ -1,0 +1,8 @@
+
+{
+  "name": "Vườn Mai Gò Cát",
+  "description": "Website giới thiệu và đặt lịch tham quan Vườn Mai Gò Cát - Tinh hoa Mai Tết Miền Nam.",
+  "requestFramePermissions": [
+    "geolocation"
+  ]
+}
