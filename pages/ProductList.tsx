@@ -188,7 +188,7 @@ const ProductList: React.FC<ProductListProps> = ({ setCurrentPage, setSelectedPr
   };
 
   return (
-    <div className="bg-slate-50 min-h-screen pb-20">
+    <div className="bg-slate-50 min-h-screen pb-2">
       {/* Banner */}
       <section
         className="text-white py-16 relative overflow-hidden"
@@ -425,56 +425,66 @@ const ProductList: React.FC<ProductListProps> = ({ setCurrentPage, setSelectedPr
 
             {/* Pagination */}
             {totalPages > 1 && (
-              <div className="mt-10 flex items-center justify-center">
-                <div className="flex items-center gap-5 bg-slate-900/90 text-white rounded-full px-6 py-3 shadow-lg">
-                  <button
-                    type="button"
-                    onClick={() => setPage((p) => Math.max(1, p - 1))}
-                    disabled={safePage <= 1}
-                    className={`w-12 h-12 rounded-full grid place-items-center transition ${
-                      safePage <= 1 ? "opacity-40 cursor-not-allowed" : "hover:bg-white/10"
-                    }`}
-                    aria-label="Trang trước"
-                  >
-                    ←
-                  </button>
+  <div className="mt-8 sm:mt-9 mb-6 flex items-center justify-center">
+    <div className="flex items-center bg-white text-slate-800 rounded-full shadow-md px-3 py-1.5 sm:px-4 sm:py-2 border border-slate-200">
+      <button
+        type="button"
+        onClick={() => setPage((p) => Math.max(1, p - 1))}
+        disabled={safePage <= 1}
+        className={`w-8 h-8 sm:w-9 sm:h-9 rounded-full grid place-items-center transition text-sm ${
+          safePage <= 1
+            ? "opacity-40 cursor-not-allowed"
+            : "hover:bg-slate-100"
+        }`}
+        aria-label="Trang trước"
+      >
+        ←
+      </button>
 
-                  <div className="flex items-center gap-3">
-                    <span className="text-sm text-white/80">Trang</span>
+      <div className="flex items-center gap-1.5 sm:gap-2 mx-2 sm:mx-3 whitespace-nowrap">
+        {/* Ẩn chữ Trang trên mobile */}
+        <span className="text-xs text-slate-600 hidden sm:inline">
+          Trang
+        </span>
 
-                    <input
-                      value={safePage}
-                      onChange={(e) => {
-                        const n = Number(e.target.value);
-                        if (!Number.isFinite(n)) return;
-                        setPage(Math.min(Math.max(1, Math.trunc(n)), totalPages));
-                      }}
-                      onBlur={() => {
-                        setPage((p) => Math.min(Math.max(1, p), totalPages));
-                      }}
-                      className="w-16 text-center bg-white/10 border border-white/15 rounded-xl px-3 py-2 outline-none focus:ring-2 focus:ring-white/20"
-                      type="number"
-                      min={1}
-                      max={totalPages}
-                    />
+        <input
+          value={safePage}
+          onChange={(e) => {
+            const n = Number(e.target.value);
+            if (!Number.isFinite(n)) return;
+            setPage(Math.min(Math.max(1, Math.trunc(n)), totalPages));
+          }}
+          onBlur={() => setPage((p) => Math.min(Math.max(1, p), totalPages))}
+          className="w-12 sm:w-14 text-center bg-slate-100 border border-slate-300 rounded-lg px-2 py-1.5 outline-none focus:ring-2 focus:ring-amber-300 text-xs text-slate-800"
+          type="number"
+          min={1}
+          max={totalPages}
+        />
 
-                    <span className="text-sm text-white/80">/ {totalPages}</span>
-                  </div>
+        <span className="text-xs text-slate-600">
+          / {totalPages}
+        </span>
+      </div>
 
-                  <button
-                    type="button"
-                    onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
-                    disabled={safePage >= totalPages}
-                    className={`w-12 h-12 rounded-full grid place-items-center transition ${
-                      safePage >= totalPages ? "opacity-40 cursor-not-allowed" : "hover:bg-white/10"
-                    }`}
-                    aria-label="Trang sau"
-                  >
-                    →
-                  </button>
-                </div>
-              </div>
-            )}
+      <button
+        type="button"
+        onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
+        disabled={safePage >= totalPages}
+        className={`w-8 h-8 sm:w-9 sm:h-9 rounded-full grid place-items-center transition text-sm ${
+          safePage >= totalPages
+            ? "opacity-40 cursor-not-allowed"
+            : "hover:bg-slate-100"
+        }`}
+        aria-label="Trang sau"
+      >
+        →
+      </button>
+    </div>
+  </div>
+)}
+
+
+
           </div>
         </div>
       </div>
