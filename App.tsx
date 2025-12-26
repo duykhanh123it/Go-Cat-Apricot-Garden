@@ -33,7 +33,7 @@ const App: React.FC = () => {
       case "products":
         return <ProductList setCurrentPage={navigate} setSelectedProduct={setSelectedProduct} />;
 
-      case "detail":
+      case "product-detail":
         return selectedProduct ? (
           <ProductDetail
             product={selectedProduct}
