@@ -1,76 +1,76 @@
+// src/data.ts
 
-import { Product } from './types';
+import raw from "./products_raw.json";
+import { Product } from "./types";
 
-export const products: Product[] = [
-  {
-    id: 'GC-BNS-001',
-    name: 'Mai Lão Cổ Thụ 50 Năm',
-    price: 50000000,
-    rentPrice: 5000000,
-    category: 'Mai Bonsai',
-    height: '1m8',
-    width: '1m',
-    age: 50,
-    image: '/BS106.jpg',
-    thumbnails: [
-      '/BS106.jpg',
-      '/BS106.jpg',
-      '/BS106.jpg',
-      '/BS106.jpg',
-    ],
+/**
+ * Kiểu dữ liệu gốc từ JSON
+ * (giữ nguyên key tiếng Việt để map chính xác)
+ */
+type RawRow = {
+  "Mã Cây": string;
+  "Giá Thuê (triệu)": number | null;
+  "Giá Bán (triệu)": number | null;
+  "Cao_m": number | null;
+  "Ngang_m": number | null;
+  "Hoành_cm": number | null;
+  "Chậu_m": number | null;
+};
 
-    description: 'Mai lão quý hiếm, dáng độc đáo, trên 50 năm tuổi. Thân cổ kính, hoa nở đồng loạt tạo nên vẻ đẹp rực rỡ cho ngày Tết.'
-  },
-  {
-    id: 'GC-BNS-002',
-    name: 'Mai Bonsai Nghệ Thuật',
-    price: 35000000,
-    rentPrice: 4000000,
-    category: 'Mai Bonsai',
-    height: '1m2',
-    width: '0.8m',
-    age: 20,
-    image: '/BS107.jpg',
-    thumbnails: [],
-    description: 'Chậu cảnh mini tinh tế, phù hợp không gian nhỏ.'
-  },
-  {
-    id: 'GC-T-001',
-    name: 'Mai Vàng Rực Rỡ',
-    price: 15000000,
-    rentPrice: 2000000,
-    category: 'Mai Tán',
-    height: '2m',
-    width: '1.5m',
-    age: 10,
-    image: '/BS124.jpg',
-    thumbnails: [],
-    description: 'Hoa nở đồng loạt, màu vàng tươi sáng.'
-  },
-  {
-    id: 'GC-BNS-003',
-    name: 'Mai Chiếu Thủy Dáng Đẹp',
-    price: 25000000,
-    rentPrice: 3000000,
-    category: 'Mai Bonsai',
-    height: '1m',
-    width: '0.6m',
-    age: 15,
-    image: '/bs149.jpg',
-    thumbnails: [],
-    description: 'Dáng đẹp tự nhiên, thân cổ kính độc đáo.'
-  },
-  {
-    id: 'GC-T-002',
-    name: 'Mai Vàng Nguyên Bản',
-    price: 12000000,
-    rentPrice: 1500000,
-    category: 'Mai Tán',
-    height: '1m5',
-    width: '1m2',
-    age: 8,
-    image: '/BS360.jpg',
-    thumbnails: [],
-    description: 'Giữ trọn vẻ đẹp tự nhiên của cây mai miền Nam.'
-  }
-];
+/** Triệu → VND */
+const toVND = (million: number | null): number | null => {
+  if (million === null) return null;
+  const n = Number(million);
+  return Number.isFinite(n) ? Math.round(n * 1_000_000) : null;
+};
+
+/** Số mét → chuỗi hiển thị (vd: 2.5 → "2.5m") */
+const fmtMeter = (m: number | null): string | null => {
+  if (m === null) return null;
+  const n = Number(m);
+  if (!Number.isFinite(n)) return null;
+  return `${n}m`;
+};
+
+/** Chuẩn hoá mã cây để hiển thị */
+const normalizeCode = (code: string): string =>
+  String(code).trim().replace(/\s+/g, " "); // "BS   01" → "BS 01"
+
+/** Chuẩn hoá mã cây cho tên file ảnh */
+const codeForImage = (code: string): string =>
+  normalizeCode(code).replace(/\s+/g, ""); // "BS 01" → "BS01"
+
+/**
+ * DANH SÁCH SẢN PHẨM DÙNG CHO TOÀN BỘ WEB
+ */
+export const products: Product[] = (raw as RawRow[])
+  .filter((row) => row && row["Mã Cây"])
+  .map((row) => {
+    const code = normalizeCode(row["Mã Cây"]);
+    const imageCode = codeForImage(code);
+
+    // Quy ước ảnh:
+    // public/products/BS01.jpg
+    // nếu chưa có ảnh → dùng ảnh fallback
+    const fallbackImage = "/no-avatar.png";
+    const image = `/products/${imageCode}.jpg`;
+
+    return {
+      id: code,
+      name: `Mai ${code}`,
+
+      category: "Mai Bonsai",
+
+      price: toVND(row["Giá Bán (triệu)"]),
+      rentPrice: toVND(row["Giá Thuê (triệu)"]),
+
+      height: fmtMeter(row["Cao_m"]),
+      width: fmtMeter(row["Ngang_m"]),
+      age: null,
+
+      image: image || fallbackImage,
+      thumbnails: [image || fallbackImage],
+
+      description: `Mã cây ${code}. Vui lòng liên hệ để xem cây thực tế và nhận tư vấn chi tiết.`,
+    };
+  });
